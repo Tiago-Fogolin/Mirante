@@ -23,7 +23,7 @@ class HomeService:
         self.ods_service = ods_service(db)
 
     def top_municipios_por_acoes(self, limite: int = 3):
-        resultados = (
+        return (
             self.db.query(
                 MunicipioModel.id,
                 MunicipioModel.nome,
@@ -34,17 +34,6 @@ class HomeService:
             .limit(limite)
             .all()
         )
-
-        retorno = [
-            {
-                "id": r.id,
-                "nome": r.nome,
-                "total_acoes": r.total_acoes
-            }
-            for r in resultados
-        ]
-
-        return retorno
     
     # TODO -> adicionar esse relacionamento
     # ainda não tem tabela de ods -> acao
