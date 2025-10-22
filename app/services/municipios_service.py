@@ -10,6 +10,9 @@ class MunicipioService:
     def get_all(self):
         return self.db.query(MunicipioModel).all()
     
+    def get_count(self):
+        return self.db.query(MunicipioModel).count()
+    
     def get_by_id(self, id):
         return self.db.query(MunicipioModel).get(id)
 

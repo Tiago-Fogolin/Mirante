@@ -9,7 +9,10 @@ class AcaoService:
 
     def get_all(self):
         return self.db.query(AcaoModel).all()
-    
+
+    def get_count(self):
+        return self.db.query(AcaoModel).count()
+
     def get_by_id(self, id):
         return self.db.query(AcaoModel).get(id)
 
