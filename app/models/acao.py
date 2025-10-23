@@ -21,5 +21,6 @@ class Acao(Base):
     municipio_id = Column(Integer, ForeignKey("municipios.id"), nullable=False)
 
     municipio = relationship("Municipio", back_populates="acoes")
+    acao_ods = relationship("AcaoOds", back_populates="acao", cascade="all, delete-orphan")
 
 

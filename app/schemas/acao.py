@@ -3,6 +3,9 @@ from typing import Optional
 from datetime import date
 from app.models.acao import StatusAcaoEnum
 from app.schemas.municipio import Municipio
+from app.schemas.ods import ODSBase
+from typing import List
+
 
 class AcaoBase(BaseModel):
     titulo: str
@@ -19,6 +22,7 @@ class AcaoCreate(AcaoBase):
 class Acao(AcaoBase):
     id: int
     municipio: Municipio
+    ods: List[ODSBase] = []
 
     class Config:
         orm_mode = True
