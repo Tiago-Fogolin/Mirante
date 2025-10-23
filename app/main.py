@@ -5,6 +5,7 @@ from app.routers import usuarios_router
 from app.routers import acoes_router
 from app.routers import ods_router
 from app.routers import home_router
+from app.routers import me_router
 
 
 app = FastAPI(title="Mirante API")
@@ -27,4 +28,5 @@ app.include_router(usuarios_router.router)
 app.include_router(acoes_router.router)
 app.include_router(ods_router.router)
 app.include_router(home_router.router)
+app.include_router(me_router.router)
 

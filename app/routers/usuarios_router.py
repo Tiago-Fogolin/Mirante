@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+
 from sqlalchemy.orm import Session
-from app.schemas.usuario import UsuarioCreate
+
+from app.schemas.usuario import UsuarioCreate, Usuario
 from app.schemas.auth import Token, LoginRequest
-from app.models.usuario import Usuario
+
+from app.models.usuario import Usuario as UsuarioModel
+
 from app.dependencies import get_db
 from app.core.security import create_access_token
+from app.core.deps import get_current_user
+
 from app.services.usuario_service import UsuarioService
 from sqlalchemy.exc import IntegrityError
 
@@ -17,7 +23,7 @@ def registrar(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     service = UsuarioService(db)
 
     # TODO -> mudar pra service essa query do existente
-    existente = db.query(Usuario).filter_by(email=usuario.email).first()
+    existente = db.query(UsuarioModel).filter_by(email=usuario.email).first()
     if existente:
         raise HTTPException(status_code=400, detail="E-mail já cadastrado")
     try:
