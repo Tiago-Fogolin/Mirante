@@ -15,6 +15,7 @@ class NoticiaExtraida:
     titulo: str
     conteudo_integral: str
     url_imagem: str
+    municipio_id: int
 
 # class CrawlerNoticias:
 

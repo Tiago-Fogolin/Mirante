@@ -12,3 +12,4 @@ class Municipio(Base):
 
     usuarios = relationship("Usuario", back_populates="municipio")
     acoes = relationship("Acao", back_populates="municipio")
+    noticias = relationship("Noticia", back_populates="municipio")

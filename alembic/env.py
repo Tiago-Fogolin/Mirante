@@ -18,7 +18,7 @@ from app.models.municipio import Municipio
 from app.models.noticia import Noticia
 from app.models.usuario import Usuario
 from app.models.tema import Tema
-
+import app.models.tema
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

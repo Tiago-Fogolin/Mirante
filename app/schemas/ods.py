@@ -1,8 +1,9 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class ODSBase(BaseModel):
     numero: int
-    nome: str
+    nome: Optional[str] = None
 
 class ODSCreate(ODSBase):
     pass
@@ -12,4 +13,3 @@ class ODS(ODSBase):
 
     class Config:
         orm_mode = True
-    

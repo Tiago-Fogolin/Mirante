@@ -21,10 +21,23 @@ class AcaoOdsAppService:
         self.sdg_mapper_service = sdg_mapper_service(db)
 
     def criar_acao_com_ods(self, acao_data: AcaoCreate):
+        ods_ids = acao_data.ods_ids
+
+        acao_criada = self.acao_service.criar_acao(acao_data)
+
+        self.acao_ods_service.create_bulk(acao_criada.id, ods_ids)
+
+        self.db.refresh(acao_criada)
+
+        return acao_criada
+
+    def criar_acao_com_ods_sdg(self, acao_data: AcaoCreate):
         ods_ids = self.sdg_mapper_service.map_ods_to_ids(acao_data)
 
         acao_criada = self.acao_service.criar_acao(acao_data)
 
         self.acao_ods_service.create_bulk(acao_criada.id, ods_ids)
+
+        self.db.refresh(acao_criada)
 
         return acao_criada

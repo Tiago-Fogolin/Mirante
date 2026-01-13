@@ -29,7 +29,7 @@ def main():
         print("Nenhuma notícia encontrada no período.")
         return
 
-    # 3. Salvar no Banco de Dados
+
     db = SessionLocal()
     contagem_novas = 0
 
@@ -45,7 +45,8 @@ def main():
                     data_publicacao=item.data_publicacao,
                     url_completa=item.url_completa,
                     conteudo_integral=item.conteudo_integral,
-                    url_imagem=item.url_imagem
+                    url_imagem=item.url_imagem,
+                    municipio_id=item.municipio_id
                 )
                 db.add(nova_noticia)
                 contagem_novas += 1

@@ -11,6 +11,7 @@ mapa_meses = {
 class NoticiasMariliaCrawler():
     def __init__(self, base_url):
         self.base_url = base_url
+        self.municipio_id = 1 # TODO -> fazer request pro banco pra pegar esse id
 
     def buscar_conteudo(self, url) -> BeautifulSoup:
         response = requests.get(url, headers=headers, timeout=10)
@@ -94,7 +95,8 @@ class NoticiasMariliaCrawler():
                 data_publicacao=data_formatada,
                 titulo=titulo,
                 conteudo_integral=conteudo_integral,
-                url_imagem=self.base_url + url_imagem
+                url_imagem=self.base_url + url_imagem,
+                municipio_id=self.municipio_id
             )
 
             resultado.append(noticia_extraida)
