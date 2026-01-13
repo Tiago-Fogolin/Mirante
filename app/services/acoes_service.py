@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.acao import Acao as AcaoModel
+from app.models.tema import Tema as TemaModel
 from app.schemas.acao import AcaoCreate
 
 class AcaoService:
@@ -17,9 +18,22 @@ class AcaoService:
         return self.db.query(AcaoModel).get(id)
 
     def criar_acao(self, data: AcaoCreate):
-        db_acao = AcaoModel(**data.model_dump())
+        dados_acao = data.model_dump()
+
+        temas_ids = dados_acao.pop("temas_ids", [])
+
+        # remove o campo de ods, ja populado
+        dados_acao.pop("ods_ids")
+
+        db_acao = AcaoModel(**dados_acao)
+
+        if temas_ids:
+            temas_objetos = self.db.query(TemaModel).filter(TemaModel.id.in_(temas_ids)).all()
+
+            db_acao.temas = temas_objetos
+
         self.db.add(db_acao)
         self.db.commit()
         self.db.refresh(db_acao)
+
         return db_acao
-    

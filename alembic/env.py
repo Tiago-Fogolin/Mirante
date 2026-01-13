@@ -11,7 +11,14 @@ from alembic import context
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from app.database import Base
-from app.models import *
+from app.models.acao import Acao
+from app.models.ods import ODS
+from app.models.acao_ods import AcaoOds
+from app.models.municipio import Municipio
+from app.models.noticia import Noticia
+from app.models.usuario import Usuario
+from app.models.tema import Tema
+import app.models.tema
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
