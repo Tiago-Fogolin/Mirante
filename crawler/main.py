@@ -8,7 +8,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.database import SessionLocal
 from app.models.noticia import Noticia
 from crawler.noticia_crawler.noticias_marilia_crawler import NoticiasMariliaCrawler
-
+from app.redis_client import fila
+from workers.noticia_worker import check_and_add_noticia
 # TODO -> jogar funções de salvar no banco de dados para service
 
 def main():
@@ -31,7 +32,6 @@ def main():
 
 
     db = SessionLocal()
-    contagem_novas = 0
 
     try:
         print("Salvando no banco de dados...")
@@ -48,17 +48,16 @@ def main():
                     url_imagem=item.url_imagem,
                     municipio_id=item.municipio_id
                 )
-                db.add(nova_noticia)
-                contagem_novas += 1
+                fila.enqueue(check_and_add_noticia, nova_noticia)
+
             else:
                 print(f"Pular (já existe): {item.titulo[:30]}...")
 
 
         db.commit()
-        print(f"\nSucesso! {contagem_novas} novas notícias salvas.")
+        print("Crawler finalizado")
 
     except Exception as e:
-        print(f"Erro ao salvar no banco: {e}")
         db.rollback()
     finally:
         db.close()

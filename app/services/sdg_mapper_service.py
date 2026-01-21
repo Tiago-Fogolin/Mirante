@@ -8,10 +8,7 @@ from dotenv import load_dotenv
 import os
 import json
 
-
 # TODO -> adicionar tratamento de erro com a comunicação do sdg mapper
-
-
 
 load_dotenv()
 
@@ -130,12 +127,12 @@ class SDGMapperService:
 
         return retorno
 
-    def make_request(self, acao_data):
+    def make_request(self, data):
         headers = {"Content-Type": "application/json", "X-Api-Key": API_KEY}
         response = requests.post(
             self.url,
             headers=headers,
-            json={"input_text": acao_data, "source_language": "pt"}
+            json={"input_text": data, "source_language": "pt"}
         )
 
         return response
