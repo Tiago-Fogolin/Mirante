@@ -109,8 +109,3 @@ class NoticiasMariliaCrawler():
         noticias = self.extrair_noticias(urls)
 
         return noticias
-
-
-t = NoticiasMariliaCrawler("https://www.marilia.sp.gov.br")
-noticias = t.rodar_crawler("01-11-2025", "01-11-2025")
-print(noticias)

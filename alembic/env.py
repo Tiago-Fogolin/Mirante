@@ -23,8 +23,9 @@ import app.models.tema
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-fileConfig(config.config_file_name)
-
+# fileConfig(config.config_file_name)
+section = config.config_ini_section
+config.set_section_option(section, "sqlalchemy.url", os.environ.get("DATABASE_URL"))
 
 # add your model's MetaData object here
 # for 'autogenerate' support

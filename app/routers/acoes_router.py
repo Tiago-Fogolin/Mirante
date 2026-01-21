@@ -9,14 +9,17 @@ from app.dependencies import get_db
 from app.core.deps import get_current_user
 from app.services.acoes_service import AcaoService
 from app.application_services.acao_ods_appservice import AcaoOdsAppService
+from workers.acao_worker import save_sdgmapper_ods
+from app.redis_client import fila
 
 router = APIRouter(prefix="/acoes", tags=["acoes"])
 
 @router.post("/", response_model=Acao)
 def criar_acao(acao: AcaoCreate, db: Session = Depends(get_db), usuario: Usuario = Depends(get_current_user)):
     appservice = AcaoOdsAppService(db, AcaoOdsService, AcaoService)
-    return appservice.criar_acao_com_ods(acao)
-
+    acao_criada = appservice.criar_acao_com_ods(acao)
+    fila.enqueue(save_sdgmapper_ods, acao_criada)
+    return acao_criada
 
 @router.get("/", response_model=list[Acao])
 def listar_acoes(db: Session = Depends(get_db)):
