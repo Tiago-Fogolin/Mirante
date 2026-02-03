@@ -87,7 +87,15 @@ class NoticiasMariliaCrawler():
                 tag_imagem = div_primeira_imagem.find("a")
                 if tag_imagem:
                     url_imagem = tag_imagem["href"]
-
+            else:
+                div_imagem = conteudo.find(
+                    "div",
+                    class_="ntc_img_slide_noticia"
+                )
+                if div_imagem:
+                    img = div_imagem.find("img")
+                    if img:
+                        url_imagem = img["src"]
 
 
             noticia_extraida = NoticiaExtraida(

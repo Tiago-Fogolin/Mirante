@@ -2,6 +2,8 @@ from app.models.noticia import Noticia
 from app.database import SessionLocal
 from app.services.sdg_mapper_service import SDGMapperService
 
+
+# TODO -> abrir a sessão fora, e fechar dps de todas as notícias de cada município
 def check_and_add_noticia(dados_noticia: Noticia):
     db = SessionLocal()
     sdg_mapper = SDGMapperService(db)
@@ -11,6 +13,9 @@ def check_and_add_noticia(dados_noticia: Noticia):
 
     if ods_encontradas:
         print("Alguma ods encontrada... Salvando noticia")
+        ods_objs = sdg_mapper.get_ods_objs(ods_encontradas)
+        dados_noticia.ods.extend(ods_objs)
+
         db.add(dados_noticia)
         db.commit()
     else:
