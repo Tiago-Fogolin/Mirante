@@ -1,7 +1,13 @@
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Table
 from app.database import Base
 from sqlalchemy.orm import relationship
 
+noticia_ods_association = Table(
+    'noticia_ods',
+    Base.metadata,
+    Column('acao_id', Integer, ForeignKey('noticias.id'), primary_key=True),
+    Column('tema_id', Integer, ForeignKey('ods.id'), primary_key=True)
+)
 
 class Noticia(Base):
     __tablename__ = "noticias"
@@ -15,3 +21,8 @@ class Noticia(Base):
     municipio_id = Column(Integer, ForeignKey("municipios.id"), nullable=False)
 
     municipio = relationship("Municipio", back_populates="noticias")
+    ods = relationship(
+        "ODS",
+        secondary=noticia_ods_association,
+        back_populates="noticias"
+    )

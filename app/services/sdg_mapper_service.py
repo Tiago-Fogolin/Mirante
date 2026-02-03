@@ -117,6 +117,11 @@ class SDGMapperService:
         ods_ids = [ods.id for ods in ods_in_db]
         return ods_ids
 
+    def get_ods_objs(self, result):
+        ods_in_db = self.db.query(ODS).filter(ODS.numero.in_(result)).all()
+
+        return ods_in_db
+
     def get_ods_from_raw_request(self, raw_request):
         data = json.loads(json.loads(raw_request.text)["data"][0])
         children = data.get("children", [])
