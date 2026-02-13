@@ -25,7 +25,8 @@ import app.models.tema
 config = context.config
 # fileConfig(config.config_file_name)
 section = config.config_ini_section
-config.set_section_option(section, "sqlalchemy.url", os.environ.get("DATABASE_URL"))
+db_url = os.environ.get("DATABASE_URL")
+config.set_section_option(section, "sqlalchemy.url", db_url)
 
 # add your model's MetaData object here
 # for 'autogenerate' support

@@ -14,6 +14,7 @@ app = FastAPI(title="Mirante API")
 
 origins = [
     "http://localhost:5173",
+    "https://mirante.labs.unimar.br"
 ]
 
 app.add_middleware(
