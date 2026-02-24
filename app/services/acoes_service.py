@@ -8,8 +8,14 @@ class AcaoService:
     def __init__(self, db: Session):
         self.db = db
 
-    def get_all(self):
-        return self.db.query(AcaoModel).all()
+    def get_all(self, municipio_id: int | None = None):
+        query = self.db.query(AcaoModel)
+
+        if municipio_id is not None:
+            query = query.filter(AcaoModel.municipio_id == municipio_id)
+
+        return query.all()
+
 
     def get_count(self):
         return self.db.query(AcaoModel).count()

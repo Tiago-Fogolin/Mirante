@@ -1,3 +1,4 @@
+from typing_extensions import Optional
 from app.application_services import acao_ods_appservice
 from app.services.acao_ods_service import AcaoOdsService
 from app.services.sdg_mapper_service import SDGMapperService
@@ -9,6 +10,7 @@ from app.dependencies import get_db
 from app.core.deps import get_current_user
 from app.services.acoes_service import AcaoService
 from app.application_services.acao_ods_appservice import AcaoOdsAppService
+from typing import Optional
 from workers.acao_worker import save_sdgmapper_ods
 from app.redis_client import fila
 
@@ -22,9 +24,9 @@ def criar_acao(acao: AcaoCreate, db: Session = Depends(get_db), usuario: Usuario
     return acao_criada
 
 @router.get("/", response_model=list[Acao])
-def listar_acoes(db: Session = Depends(get_db)):
+def listar_acoes(municipio_id: Optional[int] = None, db: Session = Depends(get_db)):
     acao_service = AcaoService(db)
-    return acao_service.get_all()
+    return acao_service.get_all(municipio_id=municipio_id)
 
 
 @router.get("/{id}", response_model=Acao)
