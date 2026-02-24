@@ -3,10 +3,11 @@ from pydantic import BaseModel, field_validator
 class MunicipioBase(BaseModel):
     nome: str
     uf: str
-    geojson_limite: str | None = None
+    latitude: float
+    longitude: float
 
 class MunicipioCreate(MunicipioBase):
-    
+
     @field_validator("uf")
     def validar_uf(cls, v):
         if len(v) != 2:
