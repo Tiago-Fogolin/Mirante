@@ -2,6 +2,11 @@ name: Build Docker Image
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Tag da versão (ex: v2, v3, 1.0.0)'
+        required: true
+        default: 'latest'
 
 jobs:
   build:
@@ -21,8 +26,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mirante-backend:latest
+          no-cache: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/mirante-backend:${{ github.event.inputs.version }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/mirante-backend:latest
