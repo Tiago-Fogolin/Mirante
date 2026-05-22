@@ -14,6 +14,23 @@ def seed_db():
             db.add(marilia)
             print("Município Marília adicionado.")
 
+        paulinia = db.query(Municipio).filter(Municipio.nome == "Paulínia").first()
+        if not paulinia:
+            paulinia = Municipio(
+                nome="Paulínia",
+                uf="SP"
+            )
+            db.add(paulinia)
+            print("Município Paulínia adicionado.")
+
+        ribeirao_preto = db.query(Municipio).filter(Municipio.nome == "Ribeirão Preto").first()
+        if not ribeirao_preto:
+            ribeirao_preto = Municipio(
+                nome="Ribeirão Preto",
+                uf="SP"
+            )
+            db.add(ribeirao_preto)
+            print("Município Ribeirão Preto adicionado.")
 
         ods_data = [
             (1, "Erradicação da Pobreza"),
