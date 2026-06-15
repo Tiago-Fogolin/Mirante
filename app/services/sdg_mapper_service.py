@@ -123,6 +123,7 @@ class SDGMapperService:
         return ods_in_db
 
     def get_ods_from_raw_request(self, raw_request):
+        print(json.loads(raw_request.text))
         data = json.loads(json.loads(raw_request.text)["data"][0])
         children = data.get("children", [])
         retorno = []
