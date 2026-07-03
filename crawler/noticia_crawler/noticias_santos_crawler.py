@@ -1,7 +1,7 @@
 from crawler.noticia_crawler.noticias_crawler import *
 import requests
 from bs4 import BeautifulSoup
-from datetime import date
+from datetime import date, datetime
 
 mapa_meses = {
     'janeiro': 1, 'fevereiro': 2, 'março': 3, 'abril': 4, 'maio': 5, 'junho': 6,
@@ -18,24 +18,28 @@ class NoticiasSantosCrawler():
         soup = BeautifulSoup(response.content, 'html.parser')
         return soup
 
-    def buscar_noticias(self) -> BeautifulSoup:
-        url = self.base_url + "/?q=lista-de-noticias"
+    def buscar_noticias(self, pagina) -> BeautifulSoup:
+        url = self.base_url + f"/?q=lista-de-noticias&page={pagina}"
         return self.buscar_conteudo(url)
 
     def extrair_url_noticias(self, dia_de, dia_ate) -> List[str]:
         retorno = []
-        data_lista = dia_de.split('-')
-        dia = data_lista[0]
-        mes = data_lista[1]
-        ano = data_lista[2]
+
+        dia_de_formatado = datetime.strptime(dia_de, "%d-%m-%Y").date()
+        dia_ate_formatado = datetime.strptime(dia_ate, "%d-%m-%Y").date()
+
+        # data_lista = dia_de.split('-')
+        # dia = data_lista[0]
+        # mes = data_lista[1]
+        # ano = data_lista[2]
 
         total_paginas = 1
 
-        pagina_atual = 1
+        pagina_atual = 0
         while pagina_atual <= total_paginas:
-            conteudo = self.buscar_noticias()
+            conteudo = self.buscar_noticias(pagina_atual)
 
-            if pagina_atual == 1:
+            if pagina_atual == 0:
                 paginacao = conteudo.find("li", class_="pager-last").find("a")
                 if paginacao:
                     texto_paginacao = paginacao["href"]
@@ -45,14 +49,35 @@ class NoticiasSantosCrawler():
             ref_noticias = conteudo.find("div", class_="view-content").find_all("div", class_="row-dia")
 
             for item in ref_noticias:
-                div_data = item.find("div", class_=f"{dia}{mes}{ano} lista-noticias")
-                if div_data:
-                    div_noticias = div_data.find_all("div", class_="grid-item col-xs-12 col-sm-6 col-md-4 col-lg-4")
+                div_data = item.find("div", class_="dia-title")
+                data_texto = div_data.find("h2").text
+
+                data_lista = data_texto.split("/")
+                dia = data_lista[0]
+                mes = data_lista[1]
+                ano = data_lista[2]
+
+                data_formatada = datetime.strptime(data_texto, "%d/%m/%Y").date()
+
+                if data_formatada < dia_de_formatado:
+                    return retorno
+
+                if dia_de_formatado <= data_formatada <= dia_ate_formatado:
+                    div_noticias = (item.find("div", class_=f"{dia}{mes}{ano} lista-noticias")
+                                .find_all("div", class_="grid-item col-xs-12 col-sm-6 col-md-4 col-lg-4"))
+                    for div in div_noticias:
+                        link = div.find("a")["href"]
+                        retorno.append(link)
                 else:
                     continue
-                for div in div_noticias:
-                    link = div.find("a")["href"]
-                    retorno.append(link)
+
+                # if div_data:
+                #     div_noticias = div_data.find_all("div", class_="grid-item col-xs-12 col-sm-6 col-md-4 col-lg-4")
+                # else:
+                #     continue
+                # for div in div_noticias:
+                #     link = div.find("a")["href"]
+                #     retorno.append(link)
 
             pagina_atual += 1
 
@@ -61,6 +86,11 @@ class NoticiasSantosCrawler():
     def extrair_noticias(self, url_noticias) -> List[NoticiaExtraida]:
         resultado = []
         for url in url_noticias:
+            print(f"URL: {url}")
+            if not url.startswith(self.base_url):
+                print("Não é notícia")
+                continue
+
             conteudo = self.buscar_conteudo(url).find("article")
 
             cabecalho_div = conteudo.find("header")
@@ -75,7 +105,7 @@ class NoticiasSantosCrawler():
             if data_div:
                 dia = int(data_div.find("span", class_="day").text)
                 mes_str = data_div.find("span", class_="month").text
-                ano = int(data_div.find("span", class_="year").text.replace("-", ""))
+                ano = int(data_div.find("span", class_="year").text.split("-")[0].replace("\n", "").strip())
 
                 data_formatada = date(ano, mapa_meses[mes_str], dia)
 
