@@ -11,6 +11,7 @@ from crawler.noticia_crawler.noticias_marilia_crawler import NoticiasMariliaCraw
 from crawler.noticia_crawler.noticias_paulinia_crawler import NoticiasPauliniaCrawler
 from crawler.noticia_crawler.noticias_ribeirao_preto_crawler import NoticiasRibeiraoPretoCrawler
 from crawler.noticia_crawler.noticias_santos_crawler import NoticiasSantosCrawler
+from crawler.noticia_crawler.noticias_americana_crawler import NoticiasAmericanaCrawler
 from app.redis_client import fila
 from workers.noticia_worker import check_and_add_noticia
 # TODO -> jogar funções de salvar no banco de dados para service
@@ -30,10 +31,12 @@ def main():
     crawler_paulinia = NoticiasPauliniaCrawler("https://www.paulinia.sp.gov.br")
     crawler_ribeirao_preto = NoticiasRibeiraoPretoCrawler("https://www.ribeiraopreto.sp.gov.br/portal/")
     crawler_santos = NoticiasSantosCrawler("https://www.santos.sp.gov.br")
+    crawler_americana = NoticiasAmericanaCrawler("https://www.americana.sp.gov.br/")
     lista_noticias_extraidas = crawler_marilia.rodar_crawler(data_inicio, data_fim)
     lista_noticias_extraidas.extend(crawler_paulinia.rodar_crawler(data_inicio, data_fim))
     lista_noticias_extraidas.extend(crawler_ribeirao_preto.rodar_crawler(data_inicio, data_fim))
     lista_noticias_extraidas.extend(crawler_santos.rodar_crawler(data_inicio, data_fim))
+    lista_noticias_extraidas.extend(crawler_americana.rodar_crawler(data_inicio, data_fim))
 
     if not lista_noticias_extraidas:
         print("Nenhuma notícia encontrada no período.")
