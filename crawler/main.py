@@ -8,6 +8,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.database import SessionLocal
 from app.models.noticia import Noticia
 from crawler.noticia_crawler.noticias_marilia_crawler import NoticiasMariliaCrawler
+from crawler.noticia_crawler.noticias_paulinia_crawler import NoticiasPauliniaCrawler
+from crawler.noticia_crawler.noticias_ribeirao_preto_crawler import NoticiasRibeiraoPretoCrawler
+from crawler.noticia_crawler.noticias_santos_crawler import NoticiasSantosCrawler
+from crawler.noticia_crawler.noticias_americana_crawler import NoticiasAmericanaCrawler
 from app.redis_client import fila
 from workers.noticia_worker import check_and_add_noticia
 # TODO -> jogar funções de salvar no banco de dados para service
@@ -23,8 +27,16 @@ def main():
     data_fim = sys.argv[2]
 
     print(f"Buscando notícias de {data_inicio} até {data_fim}...")
-    crawler = NoticiasMariliaCrawler("https://www.marilia.sp.gov.br")
-    lista_noticias_extraidas = crawler.rodar_crawler(data_inicio, data_fim)
+    crawler_marilia = NoticiasMariliaCrawler("https://www.marilia.sp.gov.br")
+    crawler_paulinia = NoticiasPauliniaCrawler("https://www.paulinia.sp.gov.br")
+    crawler_ribeirao_preto = NoticiasRibeiraoPretoCrawler("https://www.ribeiraopreto.sp.gov.br/portal/")
+    crawler_santos = NoticiasSantosCrawler("https://www.santos.sp.gov.br")
+    crawler_americana = NoticiasAmericanaCrawler("https://www.americana.sp.gov.br/")
+    lista_noticias_extraidas = crawler_marilia.rodar_crawler(data_inicio, data_fim)
+    lista_noticias_extraidas.extend(crawler_paulinia.rodar_crawler(data_inicio, data_fim))
+    lista_noticias_extraidas.extend(crawler_ribeirao_preto.rodar_crawler(data_inicio, data_fim))
+    lista_noticias_extraidas.extend(crawler_santos.rodar_crawler(data_inicio, data_fim))
+    lista_noticias_extraidas.extend(crawler_americana.rodar_crawler(data_inicio, data_fim))
 
     if not lista_noticias_extraidas:
         print("Nenhuma notícia encontrada no período.")
@@ -48,17 +60,23 @@ def main():
                     url_imagem=item.url_imagem,
                     municipio_id=item.municipio_id
                 )
-                fila.enqueue(check_and_add_noticia, nova_noticia)
+
+                db.add(nova_noticia)
+                print("Adicionando:", nova_noticia.titulo)
+                db.flush()
+                
+                fila.enqueue(check_and_add_noticia, nova_noticia.municipio_id)
 
             else:
                 print(f"Pular (já existe): {item.titulo[:30]}...")
 
-
+        print("Pendentes na sessão:", db.new)
         db.commit()
         print("Crawler finalizado")
 
     except Exception as e:
         db.rollback()
+        print("ERRO:", e)
     finally:
         db.close()
 

@@ -23,6 +23,41 @@ def seed_db():
             {"nome": "Presidente Prudente", "uf": "SP", "latitude": -22.1276, "longitude": -51.3856}
         ]
 
+        paulinia = db.query(Municipio).filter(Municipio.nome == "Paulínia").first()
+        if not paulinia:
+            paulinia = Municipio(
+                nome="Paulínia",
+                uf="SP"
+            )
+            db.add(paulinia)
+            print("Município Paulínia adicionado.")
+
+        ribeirao_preto = db.query(Municipio).filter(Municipio.nome == "Ribeirão Preto").first()
+        if not ribeirao_preto:
+            ribeirao_preto = Municipio(
+                nome="Ribeirão Preto",
+                uf="SP"
+            )
+            db.add(ribeirao_preto)
+            print("Município Ribeirão Preto adicionado.")
+
+        santos = db.query(Municipio).filter(Municipio.nome == "Santos").first()
+        if not santos:
+            santos = Municipio(
+                nome="Santos",
+                uf="SP"
+            )
+            db.add(santos)
+            print("Município Santos adicionado.")
+
+        americana = db.query(Municipio).filter(Municipio.nome == "Americana").first()
+        if not americana:
+            americana = Municipio(
+                nome="Americana",
+                uf="SP"
+            )
+            db.add(americana)
+            print("Município Americana adicionado.")
 
         for dados in municipios_seed:
             municipio_existente = db.query(Municipio).filter(Municipio.nome == dados["nome"]).first()
