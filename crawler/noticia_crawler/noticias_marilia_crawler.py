@@ -29,7 +29,7 @@ class NoticiasMariliaCrawler():
 
         pagina_atual = 1
         while pagina_atual <= total_paginas:
-            conteudo = self.buscar_noticias(dia_de, dia_ate)
+            conteudo = self.buscar_noticias(dia_de, dia_ate, pagina=pagina_atual)
 
             if pagina_atual == 1:
                 tool_tip_paginacao = conteudo.find("div", class_="sw_cont_paginacao sw_txt_tooltip")

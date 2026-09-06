@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Float
 from app.database import Base
 from sqlalchemy.orm import relationship
 
@@ -8,7 +8,8 @@ class Municipio(Base):
     id = Column(Integer, primary_key=True, index=True)
     nome = Column(String, unique=True, index=True)
     uf = Column(String, index=True)
-    geojson_limite = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
 
     usuarios = relationship("Usuario", back_populates="municipio")
     acoes = relationship("Acao", back_populates="municipio")

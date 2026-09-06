@@ -7,9 +7,9 @@ from app.services.municipios_service import MunicipioService
 from app.services.ods_service import ODSService
 
 class HomeService:
-    
+
     def __init__(
-            self, 
+            self,
             db: Session,
             municipios_service = MunicipioService,
             acoes_service = AcaoService,
@@ -34,7 +34,7 @@ class HomeService:
             .limit(limite)
             .all()
         )
-    
+
     # TODO -> adicionar esse relacionamento
     # ainda não tem tabela de ods -> acao
     # def top_acoes_por_ods(self, limite: int =3):
