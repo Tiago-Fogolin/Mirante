@@ -11,7 +11,7 @@ mapa_meses = {
 class NoticiasRibeiraoPretoCrawler():
     def __init__(self, base_url):
         self.base_url = base_url
-        self.municipio_id = 3
+        self.municipio_id = buscar_municipio_id("Ribeirão Preto")
 
     def buscar_conteudo(self, url) -> BeautifulSoup:
         response = requests.get(url, headers=headers, timeout=10)
@@ -46,8 +46,11 @@ class NoticiasRibeiraoPretoCrawler():
             ref_noticias = conteudo.find("tbody", class_="ui-datatable-data ui-widget-content").find_all("tr")
 
             for item in ref_noticias:
-                link = item.find("td").find("a")["href"]
-                retorno.append(link)
+                td = item.find("td")
+                link_tag = td.find("a") if td else None
+                if not link_tag:
+                    continue
+                retorno.append(link_tag["href"])
 
             pagina_atual += 1
 
@@ -65,10 +68,11 @@ class NoticiasRibeiraoPretoCrawler():
                 titulo = h2.text
 
             data_texto = ""
-            for node in h2.previous_siblings:
-                if isinstance(node, str) and node.strip():
-                    data_texto = node.strip()[:10]
-                    break
+            if h2:
+                for node in h2.previous_siblings:
+                    if isinstance(node, str) and node.strip():
+                        data_texto = node.strip()[:10]
+                        break
             # data_texto = conteudo.find("/html/body/div[1]/div[1]/div/section/text()").text
             data_formatada = None
             if data_texto:
@@ -80,10 +84,10 @@ class NoticiasRibeiraoPretoCrawler():
                 data_formatada = date(ano, mes, dia)
 
 
-            conteudo_divs = conteudo.find_all("p", style_= "text-align:justify")
+            conteudo_divs = conteudo.find_all("p", style="text-align:justify")
             conteudo_integral = ""
             for conteudo_div in conteudo_divs:
-                conteudo_span = conteudo_div.find("span", style_="font-size:16px")
+                conteudo_span = conteudo_div.find("span", style="font-size:16px")
                 if conteudo_span:
                     conteudo_texto = conteudo_span.text
                     conteudo_integral += f"{conteudo_texto}\n"

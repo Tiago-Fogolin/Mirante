@@ -60,5 +60,16 @@ services:
         - redis
         - db
 
+  # crawler-scheduler:
+  #   build: .
+  #   command: python -m crawler.scheduler
+  #   environment:
+  #       - DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+  #   depends_on:
+  #       db:
+  #           condition: service_healthy
+  #       redis:
+  #           condition: service_started
+
 volumes:
     postgres_data:

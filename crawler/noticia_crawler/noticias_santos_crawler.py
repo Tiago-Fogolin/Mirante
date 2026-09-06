@@ -11,7 +11,7 @@ mapa_meses = {
 class NoticiasSantosCrawler():
     def __init__(self, base_url):
         self.base_url = base_url
-        self.municipio_id = 4
+        self.municipio_id = buscar_municipio_id("Santos")
 
     def buscar_conteudo(self, url) -> BeautifulSoup:
         response = requests.get(url, headers=headers, timeout=10)
@@ -86,9 +86,7 @@ class NoticiasSantosCrawler():
     def extrair_noticias(self, url_noticias) -> List[NoticiaExtraida]:
         resultado = []
         for url in url_noticias:
-            print(f"URL: {url}")
             if not url.startswith(self.base_url):
-                print("Não é notícia")
                 continue
 
             conteudo = self.buscar_conteudo(url).find("article")

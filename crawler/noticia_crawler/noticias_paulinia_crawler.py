@@ -11,7 +11,7 @@ mapa_meses = {
 class NoticiasPauliniaCrawler():
     def __init__(self, base_url):
         self.base_url = base_url
-        self.municipio_id = 2
+        self.municipio_id = buscar_municipio_id("Paulínia")
 
     def buscar_conteudo(self, url) -> BeautifulSoup:
         response = requests.get(url, headers=headers, timeout=10)

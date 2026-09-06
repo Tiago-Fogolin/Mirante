@@ -11,7 +11,7 @@ mapa_meses = {
 class NoticiasMariliaCrawler():
     def __init__(self, base_url):
         self.base_url = base_url
-        self.municipio_id = 1 # TODO -> fazer request pro banco pra pegar esse id
+        self.municipio_id = buscar_municipio_id("Marília")
 
     def buscar_conteudo(self, url) -> BeautifulSoup:
         response = requests.get(url, headers=headers, timeout=10)

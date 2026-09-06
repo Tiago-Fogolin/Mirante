@@ -16,16 +16,7 @@ from app.redis_client import fila
 from workers.noticia_worker import check_and_add_noticia
 # TODO -> jogar funções de salvar no banco de dados para service
 
-def main():
-    if len(sys.argv) < 3:
-        print("Erro: Faltam argumentos.")
-        print("Uso: python main.py <data_inicio> <data_fim>")
-        print("Exemplo: python main.py 01-11-2025 05-11-2025")
-        return
-
-    data_inicio = sys.argv[1]
-    data_fim = sys.argv[2]
-
+def main(data_inicio: str, data_fim: str):
     print(f"Buscando notícias de {data_inicio} até {data_fim}...")
     crawler_marilia = NoticiasMariliaCrawler("https://www.marilia.sp.gov.br")
     crawler_paulinia = NoticiasPauliniaCrawler("https://www.paulinia.sp.gov.br")
@@ -61,11 +52,8 @@ def main():
                     municipio_id=item.municipio_id
                 )
 
-                db.add(nova_noticia)
-                print("Adicionando:", nova_noticia.titulo)
-                db.flush()
-                
-                fila.enqueue(check_and_add_noticia, nova_noticia.municipio_id)
+                print("Notícia adicionada à fila:", nova_noticia.titulo)
+                fila.enqueue(check_and_add_noticia, nova_noticia)
 
             else:
                 print(f"Pular (já existe): {item.titulo[:30]}...")
@@ -81,4 +69,9 @@ def main():
         db.close()
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 3:
+        print("Erro: Faltam argumentos.")
+        print("Uso: python main.py <data_inicio> <data_fim>")
+        print("Exemplo: python main.py 01-11-2025 05-11-2025")
+    else:
+        main(sys.argv[1], sys.argv[2])

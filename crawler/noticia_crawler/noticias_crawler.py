@@ -3,6 +3,9 @@ from dataclasses import dataclass
 from bs4 import BeautifulSoup
 from datetime import date
 
+from app.database import SessionLocal
+from app.models.municipio import Municipio
+
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
@@ -16,6 +19,18 @@ class NoticiaExtraida:
     conteudo_integral: str
     url_imagem: str
     municipio_id: int
+
+
+def buscar_municipio_id(nome_municipio: str) -> int:
+    """Busca no banco o id do município pelo nome."""
+    db = SessionLocal()
+    try:
+        municipio = db.query(Municipio).filter(Municipio.nome == nome_municipio).first()
+        if not municipio:
+            raise ValueError(f"Município '{nome_municipio}' não encontrado no banco de dados.")
+        return municipio.id
+    finally:
+        db.close()
 
 # class CrawlerNoticias:
 

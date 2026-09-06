@@ -14,7 +14,7 @@ mapa_meses = {
 class NoticiasAmericanaCrawler():
     def __init__(self, base_url):
         self.base_url = base_url
-        self.municipio_id = 5
+        self.municipio_id = buscar_municipio_id("Americana")
 
     def buscar_conteudo(self, url) -> BeautifulSoup:
         response = requests.get(url, headers=headers, timeout=10, verify=False)
@@ -46,7 +46,6 @@ class NoticiasAmericanaCrawler():
                 div_data_texto = ref_datas[i].text
                 data_texto = (div_data_texto[(div_data_texto.find(",") + 1):].strip()
                               .replace("de ", ""))
-                print(f"data_texto: {data_texto}")
                 data_lista = data_texto.split()
                 dia = int(data_lista[0])
                 mes_str = data_lista[1]
