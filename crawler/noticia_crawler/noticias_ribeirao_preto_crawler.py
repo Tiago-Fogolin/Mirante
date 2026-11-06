@@ -2,6 +2,7 @@ from crawler.noticia_crawler.noticias_crawler import *
 import requests
 from bs4 import BeautifulSoup
 from datetime import date
+from urllib.parse import urlparse
 
 mapa_meses = {
     'JAN': 1, 'FEV': 2, 'MAR': 3, 'ABR': 4, 'MAI': 5, 'JUN': 6,
@@ -12,6 +13,8 @@ class NoticiasRibeiraoPretoCrawler():
     def __init__(self, base_url):
         self.base_url = base_url
         self.municipio_id = buscar_municipio_id("Ribeirão Preto")
+        dominio = urlparse(base_url)
+        self.dominio = f"{dominio.scheme}://{dominio.netloc}"
 
     def buscar_conteudo(self, url) -> BeautifulSoup:
         response = requests.get(url, headers=headers, timeout=10)
@@ -59,23 +62,17 @@ class NoticiasRibeiraoPretoCrawler():
     def extrair_noticias(self, url_noticias) -> List[NoticiaExtraida]:
         resultado = []
         for url in url_noticias:
-            conteudo = self.buscar_conteudo(self.base_url + url).find("section")
-            # /html/body/div[1]/div[1]/div/section/text()
+            conteudo = self.buscar_conteudo(self.base_url + url).find("div", class_="noticia-card-wrapper")
 
-            h2 = conteudo.find("h2")
+            titulo_div = conteudo.find("h1", class_="noticia-titulo")
             titulo = ""
-            if h2:
-                titulo = h2.text
+            if titulo_div:
+                titulo = titulo_div.text
 
-            data_texto = ""
-            if h2:
-                for node in h2.previous_siblings:
-                    if isinstance(node, str) and node.strip():
-                        data_texto = node.strip()[:10]
-                        break
-            # data_texto = conteudo.find("/html/body/div[1]/div[1]/div/section/text()").text
+            data_div = conteudo.find("div", class_="noticia-meta")
             data_formatada = None
-            if data_texto:
+            if data_div:
+                data_texto = data_div.text.strip().split(" às")[0].strip()
                 partes = data_texto.split("/")
                 dia = int(partes[0])
                 mes = int(partes[1])
@@ -83,19 +80,18 @@ class NoticiasRibeiraoPretoCrawler():
 
                 data_formatada = date(ano, mes, dia)
 
-
-            conteudo_divs = conteudo.find_all("p", style="text-align:justify")
+            corpo_div = conteudo.find("div", class_="noticia-corpo")
             conteudo_integral = ""
-            for conteudo_div in conteudo_divs:
-                conteudo_span = conteudo_div.find("span", style="font-size:16px")
-                if conteudo_span:
-                    conteudo_texto = conteudo_span.text
-                    conteudo_integral += f"{conteudo_texto}\n"
-
             url_imagem = ""
-            div_primeira_imagem = conteudo.find("img")
-            if div_primeira_imagem:
-                url_imagem = div_primeira_imagem["src"]
+            if corpo_div:
+                for paragrafo in corpo_div.find_all("p"):
+                    span = paragrafo.find("span")
+                    if span:
+                        conteudo_integral += f"{span.text}\n"
+
+                img = corpo_div.find("img")
+                if img:
+                    url_imagem = self.dominio + img["src"]
 
             noticia_extraida = NoticiaExtraida(
                 url_completa=self.base_url + url,

@@ -20,7 +20,7 @@ class SDGMapperService:
 
     def __init__(self, db: Session):
         self.db = db
-        self.url = "https://knowsdgs.jrc.ec.europa.eu/api/rest/mappingdata"
+        self.url = "https://know-sdgs.jrc.ec.europa.eu/api/rest/mappingdata"
 
     def sanitize_data(self, dados: AcaoCreate) -> str:
         partes_texto = []
@@ -123,9 +123,12 @@ class SDGMapperService:
         return ods_in_db
 
     def get_ods_from_raw_request(self, raw_request):
+        if not raw_request.text:
+            raise ValueError(f"FALHA NA API: resposta vazia. Status: {raw_request.status_code}")
+
         response_dict = json.loads(raw_request.text)
 
-        if "data" not in response_dict:
+        if "data" not in response_dict or not isinstance(response_dict["data"], list):
             raise ValueError(f"FALHA NA API: A chave 'data' não veio. Retorno real: {raw_request.text} | Status: {raw_request.status_code}")
 
         data = json.loads(response_dict["data"][0])

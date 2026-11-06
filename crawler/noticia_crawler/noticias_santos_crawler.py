@@ -108,7 +108,7 @@ class NoticiasSantosCrawler():
                 data_formatada = date(ano, mapa_meses[mes_str], dia)
 
             url_imagem = ""
-            div_primeira_imagem = cabecalho_div.find("img")
+            div_primeira_imagem = conteudo.find("img")
             if div_primeira_imagem:
                 url_imagem = div_primeira_imagem["src"]
 
