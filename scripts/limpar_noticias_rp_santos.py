@@ -1,6 +1,8 @@
 """
-Apaga noticias de Ribeirao Preto e Santos num periodo, pra reprocessar
-com os crawlers corrigidos (o site de RP mudou o HTML e quebrou a extracao).
+Apaga noticias de Ribeirao Preto, Santos e Americana num periodo, pra
+reprocessar com os crawlers corrigidos (RP: site mudou o HTML e quebrou a
+extracao, alem do filtro de data que so pegava um dia; Americana: dado
+antigo sem imagem/com municipio_id errado antes do fix do seed).
 
 Uso (dentro do container do backend no Portainer):
   docker exec -it mirante_web python scripts/limpar_noticias_rp_santos.py
@@ -24,7 +26,7 @@ from app.models.noticia import Noticia
 
 DATA_INICIO = date(2026, 7, 6)
 DATA_FIM = date(2026, 11, 6)
-MUNICIPIOS = ["Ribeirão Preto", "Santos"]
+MUNICIPIOS = ["Ribeirão Preto", "Santos", "Americana"]
 
 
 def main():

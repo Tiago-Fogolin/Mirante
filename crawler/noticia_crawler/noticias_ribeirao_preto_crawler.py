@@ -1,7 +1,7 @@
 from crawler.noticia_crawler.noticias_crawler import *
 import requests
 from bs4 import BeautifulSoup
-from datetime import date
+from datetime import date, datetime, timedelta
 from urllib.parse import urlparse
 
 mapa_meses = {
@@ -21,32 +21,35 @@ class NoticiasRibeiraoPretoCrawler():
         soup = BeautifulSoup(response.content, 'html.parser')
         return soup
 
-    def buscar_noticias(self, dia_de, dia_ate) -> BeautifulSoup:
-        data_lista = dia_de.split('-')
-        dia = data_lista[0]
+    def buscar_noticias(self, dia: str) -> BeautifulSoup:
+        data_lista = dia.split('-')
+        dia_num = data_lista[0]
         mes = data_lista[1]
         ano = data_lista[2]
 
-        url = self.base_url + f"todas-noticias?ultimas=false&strFiltroData={ano}{mes}{dia}&periodoBusca=dt&status=noticia"
+        url = self.base_url + f"todas-noticias?ultimas=false&strFiltroData={ano}{mes}{dia_num}&periodoBusca=dt&status=noticia"
         return self.buscar_conteudo(url)
 
     def extrair_url_noticias(self, dia_de, dia_ate) -> List[str]:
+        # O site so suporta filtrar por um dia exato (sem intervalo), entao
+        # percorremos dia a dia em vez de usar dia_ate direto.
         retorno = []
 
-        total_paginas = 1
+        dia_de_formatado = datetime.strptime(dia_de, "%d-%m-%Y").date()
+        dia_ate_formatado = datetime.strptime(dia_ate, "%d-%m-%Y").date()
 
-        pagina_atual = 1
-        while pagina_atual <= total_paginas:
-            conteudo = self.buscar_noticias(dia_de, dia_ate)
+        dia_atual = dia_de_formatado
+        while dia_atual <= dia_ate_formatado:
+            conteudo = self.buscar_noticias(dia_atual.strftime("%d-%m-%Y"))
 
-            if pagina_atual == 1:
-                paginacao = conteudo.find("span", class_="ui-paginator-current")
-                if paginacao:
-                    texto_paginacao_dividido = paginacao.text.split()
-                    if (texto_paginacao_dividido[-1]).isnumeric():
-                        total_paginas = int(texto_paginacao_dividido[-1])
+            paginacao = conteudo.find("span", class_="ui-paginator-current")
+            if paginacao:
+                texto_paginacao_dividido = paginacao.text.split()
+                if texto_paginacao_dividido[-1].isnumeric() and int(texto_paginacao_dividido[-1]) > 1:
+                    print(f"AVISO: {dia_atual} tem mais de 1 pagina de noticias no site; so a primeira pagina sera lida.")
 
-            ref_noticias = conteudo.find("tbody", class_="ui-datatable-data ui-widget-content").find_all("tr")
+            tbody = conteudo.find("tbody", class_="ui-datatable-data ui-widget-content")
+            ref_noticias = tbody.find_all("tr") if tbody else []
 
             for item in ref_noticias:
                 td = item.find("td")
@@ -55,7 +58,7 @@ class NoticiasRibeiraoPretoCrawler():
                     continue
                 retorno.append(link_tag["href"])
 
-            pagina_atual += 1
+            dia_atual += timedelta(days=1)
 
         return retorno
 
