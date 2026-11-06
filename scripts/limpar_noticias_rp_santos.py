@@ -12,8 +12,11 @@ Uso (dentro do container do backend no Portainer):
 Depois de apagar, rebusque com:
   docker exec -it mirante_web python -m crawler.main 06-07-2026 06-11-2026
 """
+import os
 import sys
 from datetime import date
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database import SessionLocal
 from app.models.municipio import Municipio
